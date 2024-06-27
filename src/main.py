@@ -1,6 +1,19 @@
 import sys
 import ctypes.util
+import functools
+from collections.abc import Mapping
 from dragiyski.vulkan.implementation import *
+
+def print_mapping(mapping, indent = 0):
+    for name in sorted(mapping):
+        if name.startswith('_'):
+            continue
+        value = mapping[name]
+        if isinstance(value, Mapping) and hasattr(value, '_as_parameter_'):
+            print('%s%s:' % ('  ' * indent, name))
+            print_mapping(mapping[name], indent + 1)
+        else:
+            print('%s - %s: %r' % ('  ' * indent, name, mapping[name]))
 
 def main():
     app = VulkanApplication()
@@ -42,7 +55,18 @@ def main():
         print('   - %s [%s]: %s' % (layer, layer.spec_version, layer.description))
     print('  device.extensions:')
     for extension in physical_device_extensions:
-        print(' - %s [%s]' % (extension, extension.spec_version))
+        print('   - %s [%s]' % (extension, extension.spec_version))
+    print('  device.properties:')
+    print_mapping(physical_device_properties, 2)
+    print('  device.family_queue_properties:')
+    for i, p in enumerate(physical_device_family_queue_properties):
+        print('    %d:' % i)
+        print_mapping(p, 3)
+    physical_device_family_queue = [i for i, p in enumerate(physical_device_family_queue_properties) if (VK_QUEUE_COMPUTE_BIT | VK_QUEUE_TRANSFER_BIT) in p.queue_flags]
+    if len(physical_device_family_queue) <= 0:
+        raise RuntimeError('No suitable family queue found in the device. Expected family queue supported VK_QUEUE_COMPUTE_BIT and VK_QUEUE_TRANSFER_BIT')
+    physical_device_family_queue = sorted(physical_device_family_queue, key = lambda i: physical_device_family_queue_properties[i].queue_count, reverse = True)
+    physical_device_family_queue = physical_device_family_queue[0]
     return 0
 
 
