@@ -1,0 +1,26 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "654ec34c5e063ca9e9b2041d1a86d33b84e5fd0e5bcb26bc58db37381f90d8dc"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.10"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "dragiyski-vulkan": {
+            "editable": true,
+            "git": "ssh://git@github.com/Dragiyski/python-vulkan-api.git",
+            "ref": "21c797bd7ddfe12fc76ceb25e53e139b436cba62"
+        }
+    },
+    "develop": {}
+}
